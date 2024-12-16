@@ -3,6 +3,7 @@ import { lock } from "./mutex";
 
 const nullValue = { state: null, args: null };
 const channels = {};
+const once = {};
 
 function createChannel(channelName) {
   if (!channels[channelName]) {
@@ -18,7 +19,10 @@ export function pub(channelName, state, args = null) {
   });
 }
 
-export function sub(channelName, triggerState, action) {
+export function sub(channelName, triggerState, action, isonce = false) {
+  if (Array.isArray(once[channelName]) && once[channelName].includes(triggerState)) {
+    return;
+  }
   createChannel(channelName);
   const runner = ({ state, args }) => {
     if (
@@ -29,7 +33,10 @@ export function sub(channelName, triggerState, action) {
       action(args);
     }
   };
-  channels[channelName].subscribe(runner);
+  const subscriber = channels[channelName].subscribe(runner);
+  once[channelName] = isonce ? (once[channelName] || []).concat(triggerState) : null;
+
+  return subscriber;
 }
 
 export function reset(channelName) {

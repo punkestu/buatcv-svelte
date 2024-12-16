@@ -1,5 +1,12 @@
+<script>
+  import { pub } from "../utils/channel";
+
+  function preview() {
+    pub("page", "open:preview");
+  }
+</script>
 <header
-  class="sticky top-0 bg-white flex justify-end gap-4 p-4 border-2 border-black"
+  class="sticky top-0 bg-white flex justify-end gap-4 p-4 border"
 >
   <button aria-label="Save">
     <svg
@@ -19,7 +26,7 @@
       />
     </svg>
   </button>
-  <button aria-label="Download">
+  <button aria-label="Download" on:click={preview}>
     <svg
       class="w-9 h-9 text-gray-800 dark:text-white"
       aria-hidden="true"

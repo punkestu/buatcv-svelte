@@ -1,6 +1,8 @@
 <script>
   import { onMount } from "svelte";
   import { pub, sub } from "../utils/channel";
+  import { get } from "../utils/localstorage";
+  
 
   const dict = {
     name: "Name",
@@ -15,22 +17,23 @@
 
   let bio = null;
   onMount(() => {
-    sub("component", "set:bio-component", (args) => {
-      bio = args;
+    bio = get("bio");
+    sub("bio-structure", "set:bio", (data) => {
+      bio = data;
     });
   });
 
-  function openBioModal() {
-    pub("modal", "open:bio-modal");
+  function openBioInput() {
+    pub("page", "open:bio-input");
   }
 </script>
 
 <button
   aria-label="Biodata"
-  class="border-2 p-2 border-black w-full min-h-20 flex flex-col {bio
+  class="border p-2 w-full min-h-20 flex flex-col {bio
     ? 'items-start'
     : 'items-center justify-center'}"
-  on:click={openBioModal}
+  on:click={openBioInput}
 >
   {#if !bio}
     <p class="font-bold text-xl">Bio not configured!</p>

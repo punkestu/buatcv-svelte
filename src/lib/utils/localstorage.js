@@ -11,12 +11,18 @@ export function pushSeq(name, value) {
   if (!seq) {
     store(name + ":0", value);
     store("seq:" + name, [name + ":0"]);
+    return name + ":0";
   }
 
   const [last] = seq.slice(-1);
-  const [prefix, num] = last.split(":");
+  const splits = last.split(":");
+  const num = splits.pop();
+  const prefix = splits.join(":");
   const next = prefix + ":" + (parseInt(num) + 1);
   store(next, value);
+  store("seq:" + name, seq.filter((address) => get(address)).concat(next));
+
+  return next;
 }
 
 export function get(name) {
@@ -31,21 +37,16 @@ export function get(name) {
   return value.join("|");
 }
 
-export function getSeq(name) {
+export function getSeq(name, withAddress = false) {
   const seq = get("seq:" + name);
   if (!seq) {
     return [];
   }
   return seq
-    .map((name) => {
-      const value = get(name);
-      if (!value) {
-        store(
-          "seq:" + name,
-          seq.filter((a) => a !== name)
-        );
-      }
-      return value;
-    })
-    .filter((value) => value);
+    .map((address) => (withAddress ? [address, get(address)] : get(address)))
+    .filter((value) => (withAddress ? value[1] : value));
+}
+
+export function remove(name) {
+  localStorage.removeItem(name);
 }
