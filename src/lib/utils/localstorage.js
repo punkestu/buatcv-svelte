@@ -6,6 +6,14 @@ export function store(name, value) {
   localStorage.setItem(name, ty + "|" + value);
 }
 
+function pruneSeq(name) {
+  const seq = get("seq:" + name) || [];
+  store(
+    "seq:" + name,
+    seq.filter((address) => get(address))
+  );
+}
+
 export function pushSeq(name, value) {
   const seq = get("seq:" + name);
   if (!seq) {
@@ -14,6 +22,7 @@ export function pushSeq(name, value) {
     return name + ":0";
   }
 
+  pruneSeq(name);
   const [last] = seq.slice(-1);
   const splits = last.split(":");
   const num = splits.pop();
@@ -49,4 +58,15 @@ export function getSeq(name, withAddress = false) {
 
 export function remove(name) {
   localStorage.removeItem(name);
+}
+
+export function removeSeq(name) {
+  const seq = get("seq:" + name);
+  if (!seq) {
+    return;
+  }
+  seq.forEach((address) => {
+    remove(address);
+  });
+  remove("seq:" + name);
 }

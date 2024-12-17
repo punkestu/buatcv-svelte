@@ -10,8 +10,6 @@ export default () => {
   });
   sub("feature", "destroy:section", (sectionID) => {
     pub("localstorage", "remove:section", sectionID);
-    pub("section-input", "destroy:section", sectionID);
-    pub("section-list", "destroy:section", sectionID);
   });
   sub("feature", "store:item", (item) => {
     pub("localstorage", "push:items", item);
@@ -27,5 +25,11 @@ export default () => {
   });
   sub("feature", "set:hidden-items", (hiddenItems) => {
     pub("localstorage", "set:hidden-items", hiddenItems);
+  });
+  sub("feature", "use:section", (sectionID) => {
+    pub("localstorage", "push:used-sections", sectionID);
+  });
+  sub("feature", "unuse:section", (sectionID) => {
+    pub("localstorage", "remove:used-sections", sectionID);
   });
 };

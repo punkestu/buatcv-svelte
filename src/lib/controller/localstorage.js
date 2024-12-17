@@ -1,5 +1,12 @@
 import { pub, sub } from "../utils/channel";
-import { getSeq, pushSeq, remove, store } from "../utils/localstorage";
+import {
+  get,
+  getSeq,
+  pushSeq,
+  remove,
+  removeSeq,
+  store,
+} from "../utils/localstorage";
 
 export default () => {
   sub("localstorage", "set:used-sections", (sections) => {
@@ -11,12 +18,12 @@ export default () => {
     pub("localstorage", "update:bio", bio);
   });
   sub("localstorage", "push:sections", (sectionName) => {
-    const newSectionID = pushSeq("sections", sectionName);
-    pub("section-list", "set:new-section-id", newSectionID);
+    pushSeq("sections", sectionName);
     pub("localstorage", "update:sections", getSeq("sections", true));
   });
   sub("localstorage", "remove:section", (sectionID) => {
     remove(sectionID);
+    pub("localstorage", "remove:used-sections", sectionID);
     pub("localstorage", "update:sections", getSeq("sections", true));
   });
   sub("localstorage", "push:items", (item) => {
@@ -46,5 +53,20 @@ export default () => {
   sub("localstorage", "set:hidden-items", (hiddenItems) => {
     store("hidden-items", hiddenItems);
     pub("localstorage", "update:hidden-items", hiddenItems);
+  });
+  sub("localstorage", "push:used-sections", (sectionID) => {
+    const sections = get("used-sections") || [];
+    sections.push(sectionID)
+    store("used-sections", sections);
+    pub("localstorage", "update:used-sections", sections);
+  });
+  sub("localstorage", "remove:used-sections", (sectionID) => {
+    removeSeq("used-items:" + sectionID);
+    const sec = get("used-sections") || [];
+    store(
+      "used-sections",
+      sec.filter((address) => address != sectionID)
+    );
+    pub("localstorage", "update:used-sections", get("used-sections"));
   });
 };

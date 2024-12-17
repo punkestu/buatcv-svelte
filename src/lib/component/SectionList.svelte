@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { pub, reset, sub } from "../utils/channel";
+  import { pub, sub } from "../utils/channel";
   import { get } from "../utils/localstorage";
   import SectionItem from "./SectionItem.svelte";
 
@@ -8,17 +8,9 @@
 
   onMount(() => {
     usedSections = get("used-sections");
-    sub("section-list", "set:new-section-id", (newSectionID) => {
-      usedSections = usedSections
-        ? [...usedSections, newSectionID]
-        : [newSectionID];
-      pub("localstorage", "set:used-sections", usedSections);
-      reset("section-list");
-    });
-    sub("section-list", "destroy:section", (sectionID) => {
-      deleteSection(sectionID);
-      reset("section-list");
-    });
+    sub("localstorage", "update:used-sections", (newUsedSections) => {
+      usedSections = newUsedSections;
+    })
   });
 
   function openSectionInput() {
@@ -27,7 +19,7 @@
 
   function deleteSection(sectionID) {
     usedSections = usedSections.filter((id) => id !== sectionID);
-    pub("localstorage", "set:used-sections", usedSections);
+    pub("feature", "unuse:section", sectionID);
   }
 </script>
 

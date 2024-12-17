@@ -4,27 +4,25 @@
   import { getSeq } from "../utils/localstorage";
 
   let newSectionName = "";
-  let isNew = true;
+  let isNew = false;
   let sections = [];
 
   onMount(() => {
     sections = getSeq("sections", true);
   });
 
-  sub("section-input", "destroy:section", (sectionID) => {
-    sections = sections.filter((section) => section[0] !== sectionID);
-    reset("section-input");
+  sub("localstorage", "update:sections", (newSections) => {
+    sections = newSections;
   });
 
   function create() {
-    pub("page", "open:structure");
     pub("feature", "store:section", newSectionName);
+    isNew = false;
   }
 
   function use(sectionID) {
     return () => {
-      pub("section-list", "set:new-section-id", sectionID);
-      pub("section-input", "set:new-section-id", sectionID);
+      pub("feature", "use:section", sectionID);
       pub("page", "open:structure");
     };
   }
@@ -34,34 +32,41 @@
       pub("feature", "destroy:section", sectionID);
     };
   }
+
+  function back() {
+    pub("page", "open:structure");
+  }
 </script>
 
 <header class="px-4 pt-4 sticky top-0 bg-white">
   <div class="flex justify-between">
-    <h1 class="text-2xl font-semibold">Section Input</h1>
-    <label class="flex items-center cursor-pointer">
-      <span
+    <h1 class="text-2xl font-semibold flex items-center gap-2">
+      <button aria-label="Back" on:click={back}
         ><svg
           class="w-6 h-6 text-gray-800 dark:text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
-          fill="currentColor"
+          fill="none"
           viewBox="0 0 24 24"
         >
           <path
-            fill-rule="evenodd"
-            d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z"
-            clip-rule="evenodd"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 12h14M5 12l4-4m-4 4 4 4"
           />
         </svg>
-      </span>
-      <input type="checkbox" bind:checked={isNew} class="sr-only peer" />
-      <div
-        class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-0 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-      ></div>
-    </label>
+      </button>Section Input
+    </h1>
+    <button
+      class="text-blue-700 hover:text-blue-800"
+      on:click={() => {
+        isNew = !isNew;
+      }}>{!isNew ? "Tambah" : "List"}</button
+    >
   </div>
 </header>
 {#if isNew}

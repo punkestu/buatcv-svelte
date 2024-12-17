@@ -6,12 +6,12 @@
   export let sectionID;
 
   let items = [];
-  let hiddenitems = [];
+  let hiddenitems = {};
   let usedItemSub;
 
   onMount(() => {
     items = getSeq("used-items:" + sectionID, true);
-    hiddenitems = get("hidden-items") || [];
+    hiddenitems = get("hidden-items") || {};
     usedItemSub = sub(
       "localstorage",
       "update:used-items:" + sectionID,
@@ -34,9 +34,9 @@
     });
   }
 
-  function toggleVisibility(itemIndex, index) {
-    hiddenitems[itemIndex] = hiddenitems[itemIndex] || [];
-    hiddenitems[itemIndex][index] = !hiddenitems[itemIndex][index];
+  function toggleVisibility(itemID, index) {
+    hiddenitems[itemID] = hiddenitems[itemID] || [];
+    hiddenitems[itemID][index] = !hiddenitems[itemID][index];
     pub("feature", "set:hidden-items", hiddenitems);
   }
 
@@ -46,7 +46,7 @@
 </script>
 
 <div id="item-list">
-  {#each items as item, itemIndex (item[2])}
+  {#each items as item (item[2])}
     <div class="border p-2">
       <div class="flex justify-between">
         <span>{item[1].label}</span>
@@ -77,17 +77,17 @@
           {#each item[1].responsibilities as responsibility, index (index)}
             <li
               class={"border p-2" +
-                (hiddenitems[itemIndex] && hiddenitems[itemIndex][index]
+                (hiddenitems[item[0]] && hiddenitems[item[0]][index]
                   ? " opacity-50"
                   : "")}
             >
               <button
                 class="flex items-center gap-2 w-full"
                 aria-label="Visibility"
-                on:click={toggleVisibility.bind(this, itemIndex, index)}
+                on:click={toggleVisibility.bind(this, item[0], index)}
               >
                 <span class="flex-grow flex items-center justify-center">
-                  {#if hiddenitems[itemIndex] && hiddenitems[itemIndex][index]}
+                  {#if hiddenitems[item[0]] && hiddenitems[item[0]][index]}
                     <svg
                       class="w-full h-full text-gray-800 dark:text-white"
                       aria-hidden="true"
