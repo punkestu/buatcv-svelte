@@ -32,4 +32,10 @@ export default () => {
   sub("feature", "unuse:section", (sectionID) => {
     pub("localstorage", "remove:used-sections", sectionID);
   });
+  sub("feature", "store:skill", (skill) => {
+    pub("localstorage", "push:skills", skill);
+  });
+  sub("feature", "destroy:skill", (skillID) => {
+    pub("localstorage", "remove:skill", skillID);
+  });
 };

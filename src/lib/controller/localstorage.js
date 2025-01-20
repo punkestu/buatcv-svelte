@@ -69,4 +69,12 @@ export default () => {
     );
     pub("localstorage", "update:used-sections", get("used-sections"));
   });
+  sub("localstorage", "push:skills", (skill) => {
+    pushSeq("skills", skill);
+    pub("localstorage", "update:skills", getSeq("skills", true));
+  });
+  sub("localstorage", "remove:skill", (skillID) => {
+    remove(skillID);
+    pub("localstorage", "update:skills", getSeq("skills", true));
+  });
 };
