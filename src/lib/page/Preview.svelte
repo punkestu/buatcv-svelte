@@ -18,6 +18,7 @@
   const data = {
     bio: get("bio"),
     sections: sections,
+    skills: getSeq("skills"),
   };
   function formatDate(date) {
     return new Date(date).toLocaleDateString("id-ID", {
@@ -76,4 +77,11 @@
       </div>
     {/each}
   </main>
+  <footer>
+    <h2 class="font-bold text-2xl">Skills</h2>
+    <hr class="my-1" />
+    <p>
+      {data.skills.join(", ")}
+    </p>
+  </footer>
 </section>
