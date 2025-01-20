@@ -19,6 +19,7 @@
   function saveSkills() {
     if (newSkill === "") return;
     pub("feature", "store:skill", newSkill);
+    newSkill = "";
   }
   function removeSkill(skillID) {
     return () => pub("feature", "destroy:skill", skillID);
