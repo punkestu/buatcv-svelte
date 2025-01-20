@@ -19,7 +19,6 @@
   function saveSkills() {
     if (newSkill === "") return;
     pub("feature", "store:skill", newSkill);
-    toggleEdit();
   }
   function removeSkill(skillID) {
     return () => pub("feature", "destroy:skill", skillID);
