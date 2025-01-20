@@ -19,6 +19,7 @@
     bio: get("bio"),
     sections: sections,
     skills: getSeq("skills"),
+    links: get("links"),
   };
   function formatDate(date) {
     return new Date(date).toLocaleDateString("id-ID", {
@@ -45,6 +46,15 @@
       <span>{data.bio.email}&nbsp;</span>
       <span>&#x2022; {data.bio.phone}&nbsp;</span>
     </p>
+    <div class="flex flex-wrap justify-center">
+      {#each data.links as link, i}
+        <a href={link[0]}>
+          {#if i > 0}
+            &#x2022;&nbsp;
+          {/if}
+          {link[0]}&nbsp;</a>
+      {/each}
+    </div>
     <p class="w-full mt-2 text-justify">{data.bio.summary}</p>
   </header>
   <main>

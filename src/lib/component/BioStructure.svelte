@@ -16,11 +16,16 @@
   };
 
   let bio = null;
+  let links = [];
   onMount(() => {
     bio = get("bio");
+    links = get("links");
     sub("bio-structure", "set:bio", (data) => {
       bio = data;
     });
+    sub("localstorage", "update:links", (_links) => {
+      links = _links;
+    })
   });
 
   function openBioInput() {
@@ -49,6 +54,23 @@
           </div>
         {/if}
       {/each}
+    </div>
+    <div class="mt-2 flex-grow flex flex-col items-start">
+      {#if links.length > 0}
+        <h2 class="font-semibold">Links:</h2>
+        <div class="flex gap-2">
+          {#each links as link}
+            <a
+              href={link[0]}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-500"
+            >
+              {link[1]}
+            </a>
+          {/each}
+        </div>
+      {/if}
     </div>
   {/if}
 </button>

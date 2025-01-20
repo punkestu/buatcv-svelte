@@ -77,4 +77,8 @@ export default () => {
     remove(skillID);
     pub("localstorage", "update:skills", getSeq("skills", true));
   });
+  sub("localstorage", "set:links", (links) => {
+    store("links", links);
+    pub("localstorage", "update:links", links);
+  });
 };

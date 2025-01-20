@@ -38,4 +38,7 @@ export default () => {
   sub("feature", "destroy:skill", (skillID) => {
     pub("localstorage", "remove:skill", skillID);
   });
+  sub("feature", "store:links", (links) => {
+    pub("localstorage", "set:links", links);
+  });
 };
